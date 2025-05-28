@@ -27,8 +27,14 @@ async function run() {
 
     app.post('/reviews', async(req, res)=> {
       const review = req.body;
-      console.log(review);
+      review.createdAt = new Date();
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
     })
+
+    // This helps MongoDB quickly retrieve the latest reviews when you sort like this:
+    // const latestReviews = await reviewCollection.find().sort({ createdAt: -1 }).limit(10).toArray();
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
