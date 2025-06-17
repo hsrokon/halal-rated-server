@@ -37,6 +37,13 @@ async function run() {
       res.send(result);
     })
 
+    const users = client.db('HalalRatedDB').collection('users');
+
+    app.post('/users', async(req, res)=> {
+      const result = await users.insertOne(req.body);
+      res.send(result);
+    })
+
     // This helps MongoDB quickly retrieve the latest reviews when you sort like this:
     // const latestReviews = await reviewCollection.find().sort({ createdAt: -1 }).limit(10).toArray();
 
