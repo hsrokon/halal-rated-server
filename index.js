@@ -25,10 +25,15 @@ async function run() {
 
     const reviewCollection = client.db('HalalRatedDB').collection('reviews')
 
-    app.post('/reviews', async(req, res)=> {
+    app.post('/addReviews', async(req, res)=> {
       const review = req.body;
       review.createdAt = new Date();
       const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    })
+
+    app.get('/reviews', async(req, res)=> {
+      const result =  await reviewCollection.find().toArray();
       res.send(result);
     })
 
