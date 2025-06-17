@@ -44,6 +44,26 @@ async function run() {
       res.send(result);
     })
 
+    app.patch('/users', async(req, res)=> {
+      const query = {email: req.body.email};
+      const updateField = {
+        $set: {
+          lastLoggedIn : req.body.lastLoggedIn
+        }
+      }
+      const result = await users.updateOne(query, updateField)
+    })
+
+    app.get('/users/:email', async(req, res)=> {
+      const query = {email : req.params.email};
+      const user = await users.findOne(query);
+      if (user) {
+        res.status(200).send(user)
+      } else {
+        res.status(404).send({message: 'User not found'})
+      }
+    })
+
     // This helps MongoDB quickly retrieve the latest reviews when you sort like this:
     // const latestReviews = await reviewCollection.find().sort({ createdAt: -1 }).limit(10).toArray();
 
