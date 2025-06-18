@@ -37,6 +37,20 @@ async function run() {
       res.send(result);
     })
 
+    // Getting the existing shop names for a specific region, country, and city
+    app.get('/shops', async(req, res)=> {
+      const { region, country, city } = req.query;
+      const query = { region, country, city };
+
+      const shops = await reviewCollection
+      .find(query)
+      .project({ placeName : 1, placeSpecificLocation: 1, _id: 0 })// querying name and specific location
+      .toArray();
+
+      res.send(shops);
+    });
+
+
     const users = client.db('HalalRatedDB').collection('users');
 
     app.post('/users', async(req, res)=> {
