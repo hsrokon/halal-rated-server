@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,7 +23,42 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const reviewCollection = client.db('HalalRatedDB').collection('reviews')
+    const HalalRatedDB = client.db('HalalRatedDB');
+
+    const placeCollection = HalalRatedDB.collection('places');
+
+    app.post('/places', async(req, res)=> {
+      const placeData = req.body;
+      if (placeData.selectedPlaceId) {
+
+        await placeCollection.updateOne(
+          {_id : new ObjectId(placeData.selectedPlaceId)},
+          { $inc : {reviewCount : 1}})//increase by 1
+
+      } else {
+        placeData.enlistedIn = new Date();
+        placeData.reviewCount = 1;
+      }
+      console.log(placeData);
+      const result = await placeCollection.insertOne(placeData);
+      res.send(result);
+    })
+
+     // Getting the existing shop names for a specific region, country, and city
+    app.get('/places', async(req, res)=> {
+      const { region, country, city } = req.query;
+      const query = { region, country, city };
+
+      const shops = await placeCollection
+      .find(query)
+      .project({ placeName : 1, placeSpecificLocation: 1, _id: 1 })// querying name and specific location
+      .toArray();
+
+      res.send(shops);
+    });
+
+
+    const reviewCollection = HalalRatedDB.collection('reviews');
 
     app.post('/addReviews', async(req, res)=> {
       const review = req.body;
@@ -37,18 +72,6 @@ async function run() {
       res.send(result);
     })
 
-    // Getting the existing shop names for a specific region, country, and city
-    app.get('/shops', async(req, res)=> {
-      const { region, country, city } = req.query;
-      const query = { region, country, city };
-
-      const shops = await reviewCollection
-      .find(query)
-      .project({ placeName : 1, placeSpecificLocation: 1, _id: 0 })// querying name and specific location
-      .toArray();
-
-      res.send(shops);
-    });
 
 
     const users = client.db('HalalRatedDB').collection('users');
