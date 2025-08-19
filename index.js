@@ -29,13 +29,12 @@ async function run() {
     app.post('/places', async(req, res)=> {
       const placeData = req.body;
 
-      //for existing place
-      if (placeData.selectedPlaceId) {
-
+      const id = req.query?.selectedPlaceId
+      // for existing place
+      if (id) {
         const result = await placeCollection.updateOne(
-          {_id : new ObjectId(placeData.selectedPlaceId)},
+          {_id : new ObjectId(id)},
           { $inc : {reviewCount : 1}})//increase by 1
-
         return res.send(result);
       } 
 
@@ -43,7 +42,10 @@ async function run() {
       placeData.enlistedIn = new Date();
       placeData.reviewCount = 1;
       const result = await placeCollection.insertOne(placeData);
-      res.send(result);
+      res.send({
+        insertedId : result.insertedId,
+        placeId : result.insertedId
+      });
     })
 
     // Getting the existing shop names for a specific region, country, and city
@@ -65,9 +67,13 @@ async function run() {
 
     app.post('/addReviews', async(req, res)=> {
       const review = req.body;
-      review.createdAt = new Date();
-      const result = await reviewCollection.insertOne(review);
-      res.send(result);
+      
+      if (review.placeId) {
+        review.createdAt = new Date();
+        const result = await reviewCollection.insertOne(review);
+        return res.send(result);
+      }
+      
     })
 
     app.get('/reviews', async(req, res)=> {
