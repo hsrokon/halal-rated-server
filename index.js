@@ -24,7 +24,6 @@ async function run() {
     // await client.connect();
 
     const HalalRatedDB = client.db('HalalRatedDB');
-
     const placeCollection = HalalRatedDB.collection('places');
 
     app.post('/places', async(req, res)=> {
@@ -61,6 +60,7 @@ async function run() {
     });
 
 
+    //reviews
     const reviewCollection = HalalRatedDB.collection('reviews');
 
     app.post('/addReviews', async(req, res)=> {
