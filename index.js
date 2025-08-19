@@ -29,22 +29,25 @@ async function run() {
 
     app.post('/places', async(req, res)=> {
       const placeData = req.body;
+
+      //for existing place
       if (placeData.selectedPlaceId) {
 
-        await placeCollection.updateOne(
+        const result = await placeCollection.updateOne(
           {_id : new ObjectId(placeData.selectedPlaceId)},
           { $inc : {reviewCount : 1}})//increase by 1
 
-      } else {
-        placeData.enlistedIn = new Date();
-        placeData.reviewCount = 1;
-      }
-      console.log(placeData);
+        return res.send(result);
+      } 
+
+      //for new place
+      placeData.enlistedIn = new Date();
+      placeData.reviewCount = 1;
       const result = await placeCollection.insertOne(placeData);
       res.send(result);
     })
 
-     // Getting the existing shop names for a specific region, country, and city
+    // Getting the existing shop names for a specific region, country, and city
     app.get('/places', async(req, res)=> {
       const { region, country, city } = req.query;
       const query = { region, country, city };
