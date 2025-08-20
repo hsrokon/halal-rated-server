@@ -111,15 +111,22 @@ async function run() {
 
 
     app.get('/shops', async(req, res)=> {
-
       const query = {
         placeType : 'Shop'
       }
-
       const result = await placeCollection.find(query).toArray();
       res.send(result);
     })
 
+    app.get('/shops/:id', async(req, res)=> {
+      
+      const query = {
+        _id : new ObjectId(req.params.id)
+      };
+
+      const result = await placeCollection.findOne(query);
+      res.send(result); 
+    })
 
 
 
