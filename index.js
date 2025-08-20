@@ -82,7 +82,6 @@ async function run() {
     })
 
 
-
     const users = client.db('HalalRatedDB').collection('users');
 
     app.post('/users', async(req, res)=> {
@@ -109,6 +108,21 @@ async function run() {
         res.status(404).send({message: 'User not found'})
       }
     })
+
+
+    app.get('/shops', async(req, res)=> {
+
+      const query = {
+        placeType : 'Shop'
+      }
+
+      const result = await placeCollection.find(query).toArray();
+      res.send(result);
+    })
+
+
+
+
 
     // This helps MongoDB quickly retrieve the latest reviews when you sort like this:
     // const latestReviews = await reviewCollection.find().sort({ createdAt: -1 }).limit(10).toArray();
