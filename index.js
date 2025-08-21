@@ -81,6 +81,15 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/reviews/:shopId', async(req, res)=> {
+      const query = {
+        placeId : req.params.shopId
+      };
+
+      const result = await reviewCollection.find(query).toArray();
+      res.send(result);
+    })
+
 
     const users = client.db('HalalRatedDB').collection('users');
 
